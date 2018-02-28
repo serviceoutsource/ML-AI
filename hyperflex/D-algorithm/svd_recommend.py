@@ -3,7 +3,10 @@ from numpy import linalg as la
 
 
 """
-svd 矩阵信息压缩，菜谱推荐（传统机器学习算法）
+D-algorithm 矩阵信息压缩，菜谱推荐（传统机器学习算法）
+数据格式: [[菜 品：菜品A, 菜品，菜品C]
+          [用户A：1，    0，     2]
+          [用户B：2，    1，     0]]
 """
 
 
@@ -65,6 +68,7 @@ def standEst(dataMat, user, simMeas, item):
             if np.sum(sigma_2[: i]) >= sigma_sum:
                 return np.mat(np.eye(i + 1) * sigma[: i + 1])
         return dataMat
+
     dataMat = cul_min_dataMat(sigma)
     simTotal = 0.0; ratSimTotal = 0.0
     for j in range(n):
@@ -100,4 +104,25 @@ def recommend(dataMat, user, N=3, simMeans=cosSim, estMethod=standEst):
     for item in unrateItems:
         estimatedScore = estMethod(dataMat, user, simMeans, item)
         itemScores.append(item, estimatedScore)
-    return sorted(itemScores, key=lambda jj: jj[1],reverse=True)[: N]
+    return sorted(itemScores, key=lambda jj: jj[1], reverse=True)[: N]
+
+
+def svdEst(dataMat, user, simMeas, item, compression_ratio):
+    n = np.shape(dataMat)[1]
+    simTotal = 0.0; ratSimTotal = 0.0
+    U, Sigma, VT = la.svd(dataMat)
+    Sig = np.mat(np.eye(compression_ratio) * Sigma[: compression_ratio])
+    xformedItems = dataMat.T * U[:, : compression_ratio] * Sig.I
+    for j in range(n):
+        userRating = dataMat[user, j]
+        if userRating == 0 or j == item: continue
+        similarity = simMeas(xformedItems[item, :].T, xformedItems[j, :].T)
+        print 'the %d and %d similarity is : %f' % (item, j, similarity)
+        simTotal += similarity
+        ratSimTotal += similarity * userRating
+        if simTotal == 0: return 0
+        else: return ratSimTotal / simTotal
+
+
+def load_data_from_db():
+    pass

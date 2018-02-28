@@ -16,10 +16,17 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from rest_framework_swagger.views import get_swagger_view
+from hyperflex import views as fun
 
 schema_view = get_swagger_view(title='Pastebin API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^swagger/', schema_view),
+    url(r'^swagger/$', schema_view),
+    #
+    url(r'^hyperflex/get_tianmao_voice_answer$', fun.get_tianmao_voice_answer, name='get_tianmao_voice_answer'),
+    #
+    url(r'^hyperflex/recipe_recommended$', fun.recipe_recommended, name='recipe_recommended'),
+    #
+    url(r'^hyperflex/user_analysis$', fun.user_analysis, name='user_analysis')
 ]

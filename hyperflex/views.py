@@ -28,3 +28,12 @@ def user_analysis(request):
     :return:
     """
     pass
+
+
+def recipes_difficult(request):
+    """
+    菜谱难易程度排序推荐
+    :param request:
+    :return:
+    """
+    return
