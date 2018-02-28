@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.http import HttpResponse
+import hyperflex.analyze.user_analyze as analyze
+import json
+
+
+DATA = analyze.load_data()
 
 
 def get_tianmao_voice_answer(request):
@@ -21,19 +26,21 @@ def recipe_recommended(request):
     pass
 
 
-def user_analysis(request):
+def single_user_analysis(request):
     """
-    用户分析数据反馈至前段进行数据可视化展示
+    全体用户数据单体分析
     :param request:
     :return:
     """
-    pass
+    result_set = analyze.analyze_single_user_info(DATA)
+    return json.dumps(result_set)
 
 
-def recipes_difficult(request):
+def all_user_analysis(request):
     """
-    菜谱难易程度排序推荐
+    全体用户综合数据分析
     :param request:
     :return:
     """
-    return
+    result_set = analyze.analyze_all_user_info(DATA)
+    return json.dumps(result_set)

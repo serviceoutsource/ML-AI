@@ -28,5 +28,7 @@ urlpatterns = [
     #
     url(r'^hyperflex/recipe_recommended$', fun.recipe_recommended, name='recipe_recommended'),
     #
-    url(r'^hyperflex/user_analysis$', fun.user_analysis, name='user_analysis')
+    url(r'^hyperflex/single_user_analysis$', fun.single_user_analysis, name='single_user_analysis'),
+    #
+    url(r'^hyperflex/all_user_analysis$', fun.all_user_analysis, name='all_user_analysis')
 ]
