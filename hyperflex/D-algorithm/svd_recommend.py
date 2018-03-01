@@ -74,7 +74,8 @@ def standEst(dataMat, user, simMeas, item):
         return dataMat
 
     dataMat = cul_min_dataMat(sigma)
-    simTotal = 0.0; ratSimTotal = 0.0
+    simTotal = 0.0;
+    ratSimTotal = 0.0
     for j in range(n):
         userRating = dataMat[user, j]
         if userRating == 0:
@@ -103,8 +104,7 @@ def recommend(dataMat, user, N=3, simMeans=cosSim, estMethod=standEst):
     :return:
     """
     unrateItems = np.nonzero(dataMat[user, :].A == 0)[1]
-    if len(unrateItems) == 0:
-        return
+    if len(unrateItems) == 0: return 'you rated everything'
     itemScores = []
     for item in unrateItems:
         estimatedScore = estMethod(dataMat, user, simMeans, item)
@@ -114,7 +114,8 @@ def recommend(dataMat, user, N=3, simMeans=cosSim, estMethod=standEst):
 
 def svdEst(dataMat, user, simMeas, item, compression_ratio):
     n = np.shape(dataMat)[1]
-    simTotal = 0.0; ratSimTotal = 0.0
+    simTotal = 0.0;
+    ratSimTotal = 0.0
     U, Sigma, VT = la.svd(dataMat)
     Sig = np.mat(np.eye(compression_ratio) * Sigma[: compression_ratio])
     xformedItems = dataMat.T * U[:, : compression_ratio] * Sig.I
@@ -125,8 +126,10 @@ def svdEst(dataMat, user, simMeas, item, compression_ratio):
         print 'the %d and %d similarity is : %f' % (item, j, similarity)
         simTotal += similarity
         ratSimTotal += similarity * userRating
-        if simTotal == 0: return 0
-        else: return ratSimTotal / simTotal
+        if simTotal == 0:
+            return 0
+        else:
+            return ratSimTotal / simTotal
 
 
 def load_data_from_db(meal_type=1, data_set=analyze.load_data()):
@@ -136,18 +139,20 @@ def load_data_from_db(meal_type=1, data_set=analyze.load_data()):
     :param data_set:
     :return:
     """
-    data_set = pd.DataFrame(data_set, columns=['user_id', 'user_name', 'food_code', 'food_name', 'meal_type', 'eat_time'])
-    food_list = set(map(int, data_set[data_set['meal_type'] == meal_type]['food_code']))
+    data_set = pd.DataFrame(data_set,
+                            columns=['user_id', 'user_name', 'food_code', 'food_name', 'meal_type', 'eat_time'])
+    food_list = set(data_set[data_set['meal_type'] == meal_type]['food_code'])
     user_list = set(data_set['user_id'])
     meal_times = []
     for user in user_list:
         user_meal = []
         tmp = data_set[data_set['user_id'] == user]
         for food in food_list:
-            user_meal.append(len(set(tmp[tmp['food_code'] == food])))
+            user_meal.append(len(tmp[tmp['food_code'] == food]))
         meal_times.append(user_meal)
-    print(meal_times)
+    return np.mat(meal_times)
 
 
 if __name__ == '__main__':
-    load_data_from_db()
+    dataMat = load_data_from_db()
+    print(recommend(dataMat=dataMat, user=1))
