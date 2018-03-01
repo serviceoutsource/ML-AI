@@ -1,6 +1,10 @@
-import numpy as np
-from numpy import linalg as la
+# -*-coding: utf-8 -*-
 
+
+import numpy as np
+import pandas as pd
+from numpy import linalg as la
+import hyperflex.analyze.user_analyze as analyze
 
 """
 D-algorithm 矩阵信息压缩，菜谱推荐（传统机器学习算法）
@@ -90,6 +94,7 @@ def standEst(dataMat, user, simMeas, item):
 def recommend(dataMat, user, N=3, simMeans=cosSim, estMethod=standEst):
     """
     推荐结果
+    :param meal_type:
     :param dataMat:
     :param user:
     :param N:
@@ -124,5 +129,25 @@ def svdEst(dataMat, user, simMeas, item, compression_ratio):
         else: return ratSimTotal / simTotal
 
 
-def load_data_from_db():
-    pass
+def load_data_from_db(meal_type=1, data_set=analyze.load_data()):
+    """
+
+    :param meal_type:
+    :param data_set:
+    :return:
+    """
+    data_set = pd.DataFrame(data_set, columns=['user_id', 'user_name', 'food_code', 'food_name', 'meal_type', 'eat_time'])
+    food_list = set(map(int, data_set[data_set['meal_type'] == meal_type]['food_code']))
+    user_list = set(data_set['user_id'])
+    meal_times = []
+    for user in user_list:
+        user_meal = []
+        tmp = data_set[data_set['user_id'] == user]
+        for food in food_list:
+            user_meal.append(len(set(tmp[tmp['food_code'] == food])))
+        meal_times.append(user_meal)
+    print(meal_times)
+
+
+if __name__ == '__main__':
+    load_data_from_db()

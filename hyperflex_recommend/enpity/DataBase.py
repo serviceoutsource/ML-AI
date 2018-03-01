@@ -25,16 +25,15 @@ class DataBaes(object):
         print("database connect success")
         return cur, connect
 
-    def query_user_info(self, cur, query):
+    def query_data_set(self, cur, query):
         """
 
         :param cur:
         :param query:
         :return:
         """
-        user_dict = {}
         cur.execute(query)
-        return user_dict
+        return cur.fetchall()
 
 
 if __name__ == '__main__':

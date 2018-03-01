@@ -4,6 +4,7 @@
 import pandas as pd
 import hyperflex_recommend.enpity.DataBase as db
 
+
 MEAL_TYPE = [1, 2, 3]
 
 
@@ -16,7 +17,6 @@ def analyze_single_user_info(result):
     """
     result = pd.DataFrame(result, columns=['user_id', 'user_name', 'food_code', 'food_name', 'meal_type', 'eat_time'])
     user_id = set(result['user_id'])
-    user_dict = {}
     for i in user_id:
         user_info = result[result['user_id'] == i]
         breakfast_info = user_info[user_info['meal_type'] == MEAL_TYPE[0]]
@@ -50,7 +50,23 @@ def analyze_all_user_info(result):
     :param result:
     :return:
     """
-    pass
+    result = pd.DataFrame(result, columns=['user_id', 'user_name', 'food_code', 'food_name', 'meal_type', 'eat_time'])
+    breakfast_info = result[result['meal_type'] == MEAL_TYPE[0]]
+    early_dinner_info = result[result['meal_type'] == MEAL_TYPE[1]]
+    supper_info = result[result['meal_type'] == MEAL_TYPE[2]]
+
+    def analyze_food_info(meal):
+        food_name = set(meal['food_name'])
+        result_set = []
+        for name in food_name:
+            tmp = {'food_name': name, 'times': len(meal[meal['food_name'] == name])}
+            result_set.append(tmp)
+        return result_set
+
+    all_user_info_dict = {'breakfast': analyze_food_info(breakfast_info),
+                          'early_dinner': analyze_food_info(early_dinner_info),
+                          'supper': analyze_food_info(supper_info)}
+    return all_user_info_dict
 
 
 def load_data():
