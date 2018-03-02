@@ -8,7 +8,22 @@ import hyperflex_recommend.enpity.DataBase as db
 MEAL_TYPE = [1, 2, 3]
 
 
-def analyze_single_user_info(result):
+def load_data():
+    query = 'select ' \
+            'm.user_id, user_name, m.food_code, food_name, meal_type, eat_time ' \
+            'from ' \
+            'User u ' \
+            'right join ' \
+            'Meal m on u.user_id = m.user_id ' \
+            'left join ' \
+            'Food f on m.food_code=f.food_code;'
+    cur, connect = db.DataBaes().connect_db()
+    cur.execute(query)
+    data = cur.fetchall()
+    return data
+
+
+def analyze_single_user_info(result=load_data()):
     """
 
     :param result:
@@ -44,11 +59,12 @@ def analyze_single_user_info(result):
     return user_dict
 
 
-def analyze_all_user_info(result):
+def analyze_all_user_info(result=load_data()):
     """
 
     :param result:
     :return:
+        examp: {breakfast: {food_name, times}, early_dinner: {...}, supper: {...}}
     """
     result = pd.DataFrame(result, columns=['user_id', 'user_name', 'food_code', 'food_name', 'meal_type', 'eat_time'])
     breakfast_info = result[result['meal_type'] == MEAL_TYPE[0]]
@@ -67,21 +83,6 @@ def analyze_all_user_info(result):
                           'early_dinner': analyze_food_info(early_dinner_info),
                           'supper': analyze_food_info(supper_info)}
     return all_user_info_dict
-
-
-def load_data():
-    query = 'select ' \
-            'm.user_id, user_name, m.food_code, food_name, meal_type, eat_time ' \
-            'from ' \
-            'User u ' \
-            'right join ' \
-            'Meal m on u.user_id = m.user_id ' \
-            'left join ' \
-            'Food f on m.food_code=f.food_code;'
-    cur, connect = db.DataBaes().connect_db()
-    cur.execute(query)
-    data = cur.fetchall()
-    return data
 
 
 if __name__ == '__main__':

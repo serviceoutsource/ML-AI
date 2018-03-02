@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.http import HttpResponse
 import hyperflex.analyze.user_analyze as analyze
+import hyperflex.algorithm.svd_recommend as svd
 import json
 
 
@@ -23,7 +24,9 @@ def recipe_recommended(request):
     :param request:
     :return:
     """
-    pass
+    user_id = request.GET['user_id']; meal_type = request.GET['meal_type']
+    recommended_set = svd.recommend(svd.load_data_from_db(meal_type=meal_type), user_id)
+    return HttpResponse(json.dumps(recommended_set))
 
 
 def single_user_analysis(request):
@@ -33,7 +36,7 @@ def single_user_analysis(request):
     :return:
     """
     result_set = analyze.analyze_single_user_info(DATA)
-    return json.dumps(result_set)
+    return HttpResponse(json.dumps(result_set))
 
 
 def all_user_analysis(request):
@@ -43,4 +46,4 @@ def all_user_analysis(request):
     :return:
     """
     result_set = analyze.analyze_all_user_info(DATA)
-    return json.dumps(result_set)
+    return HttpResponse(json.dumps(result_set))

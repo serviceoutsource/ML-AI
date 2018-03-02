@@ -26,7 +26,7 @@ urlpatterns = [
     #
     url(r'^hyperflex/get_tianmao_voice_answer$', fun.get_tianmao_voice_answer, name='get_tianmao_voice_answer'),
     #
-    url(r'^hyperflex/recipe_recommended$', fun.recipe_recommended, name='recipe_recommended'),
+    url(r'^hyperflex/recipe_recommended/$', fun.recipe_recommended, name='recipe_recommended'),
     #
     url(r'^hyperflex/single_user_analysis$', fun.single_user_analysis, name='single_user_analysis'),
     #
